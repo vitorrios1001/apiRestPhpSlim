@@ -4,15 +4,15 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 // Routes
-
+//Retorna lista com todos os clientes
 $app->get('/todos', function ($request, $response, $args) {
-     $sth = $this->db->prepare("SELECT * FROM Clientes ORDER BY id");
+    $sth = $this->db->prepare("SELECT * FROM Clientes ORDER BY id");
     $sth->execute();
     $todos = $sth->fetchAll();
     return $this->response->withJson($todos);
 });
 
-// Retrieve todo with id 
+// Busca por id
 $app->get('/id/[{id}]', function ($request, $response, $args) {
     $sth = $this->db->prepare("SELECT * FROM Clientes WHERE id=:id");
    $sth->bindParam("id", $args['id']);
@@ -21,7 +21,7 @@ $app->get('/id/[{id}]', function ($request, $response, $args) {
    return $this->response->withJson($todos);
 });
 
-//Add a new todo
+//Adcionar novo cliente
 $app->post('/addCliente', function ($request, $response) {
     $input = $request->getParsedBody();
     $sql = "INSERT INTO Clientes (Nome, Endereco, Bairro, Cidade, CEP, Ativo, Uf) 
@@ -44,16 +44,18 @@ $app->post('/addCliente', function ($request, $response) {
     return $this->response->withJson($input);
 });
 
-// DELETE a todo with given id
+// Excluir cliente por id
 $app->delete('/deleteCliente/[{id}]', function ($request, $response, $args) {
     $sth = $this->db->prepare("DELETE FROM Clientes WHERE id=:id");
     $sth->bindParam("id", $args['id']);
     $sth->execute();
-    $todos = $sth->fetchAll();
+    $sth = $this->db->prepare("SELECT * FROM Clientes ORDER BY id");
+    $sth->execute();
+    $todos = $sth->fetchAll();    
     return $this->response->withJson($todos);
 });
 
-// Update todo with given id
+// Atualizar cliente por id
 $app->put('/putCliente/[{id}]', function ($request, $response, $args) {
     $input = $request->getParsedBody();
     $sql = "UPDATE Clientes SET Nome=:Nome,
